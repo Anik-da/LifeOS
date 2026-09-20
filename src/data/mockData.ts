@@ -6,6 +6,7 @@ import type {
   DocumentChange,
   CareerApplication,
   SkillGap,
+  JobOpportunity,
   ScholarshipMatch,
   ExpenseItem,
   Notification,
@@ -32,6 +33,27 @@ export const documents: Document[] = [
     thumbnailColor: '#ef4444',
     extractedInfo: {
       documentType: 'Scholarship Application Requirements',
+      summary: 'Official notification guidelines for the Higher Education Merit Scholarship Scheme. Eligible students must submit all required academic and financial verification documents prior to the October 15, 2026 deadline.',
+      rawText: `MINISTRY OF EDUCATION — HIGHER EDUCATION SCHOLARSHIP SCHEME (2026-2027)
+
+1. OVERVIEW & ELIGIBILITY
+The Ministry of Education invites applications for the National Higher Education Merit Scholarship. This program offers financial support of ₹50,000 per academic year to eligible undergraduate and postgraduate students.
+
+2. CRITICAL DEADLINES
+• Application Window Opens: 01 September 2026
+• Final Submission Deadline: 15 October 2026 (Strict)
+• Results Announcement: 30 November 2026
+
+3. MANDATORY DOCUMENTATION REQUIRED
+Applicants must provide authentic copies of the following documents:
+[X] Secondary School & Higher Secondary Marks Cards (Verified)
+[X] Aadhaar Card / Identity Verification
+[ ] Annual Family Income Certificate (Issued by competent revenue authority, annual income < ₹8,00,000)
+
+4. APPLICATION COMMITTEE & INQUIRIES
+For queries regarding eligibility or document verification, contact:
+Dr. Rajesh Kumar (Scholarship Committee Chair)
+Email: scholarship.support@gov.in | Phone: +91 11 2345 6789`,
       importantDates: [
         { label: 'Application deadline', date: '15 October 2026', priority: 'urgent' },
         { label: 'Results announcement', date: '30 November 2026', priority: 'info' },
@@ -64,6 +86,32 @@ export const documents: Document[] = [
     dateAdded: '2026-09-12',
     actionCount: 1,
     thumbnailColor: '#f59e0b',
+    extractedInfo: {
+      documentType: 'Scholarship Rules & Terms',
+      summary: 'Updated guidelines for merit-cum-means scholarship disbursement, attendance requirements, and renewal terms.',
+      rawText: `SCHOLARSHIP DISBURSEMENT & RENEWAL RULES (REVISED v2.0)
+
+1. ATTENDANCE & PERFORMANCE STANDARDS
+• Recipients must maintain a minimum of 75% attendance across all academic semesters.
+• A minimum Cumulative Grade Point Average (CGPA) of 7.0 is required for annual scholarship renewal.
+
+2. DISBURSEMENT SCHEDULE
+• Funds will be credited directly to the student's Aadhaar-linked bank account in two equal installments.
+• Installment 1 (₹25,000): November 2026
+• Installment 2 (₹25,000): March 2027`,
+      importantDates: [
+        { label: 'First Installment', date: 'November 2026', priority: 'info' },
+        { label: 'Second Installment', date: 'March 2027', priority: 'info' },
+      ],
+      requirements: [
+        { name: 'Aadhaar-linked Bank Account', status: 'complete' },
+        { name: 'Minimum 7.0 CGPA', status: 'complete' },
+      ],
+      amounts: [
+        { label: 'Annual Total', value: '₹50,000' },
+        { label: 'Per Semester Installment', value: '₹25,000' },
+      ],
+    },
   },
   {
     id: 'doc-3',
@@ -73,6 +121,21 @@ export const documents: Document[] = [
     dateAdded: '2026-09-08',
     actionCount: 0,
     thumbnailColor: '#3b82f6',
+    extractedInfo: {
+      documentType: 'General Application Checklist',
+      summary: 'Standard portal registration requirements and file formatting guidelines.',
+      rawText: `APPLICATION PORTAL INSTRUCTIONS & FILE FORMAT GUIDELINES
+
+1. FILE UPLOAD SPECIFICATIONS
+• All document scans must be uploaded in PDF or JPEG format.
+• Maximum file size per attachment: 5 MB.
+• Ensure text and seal signatures are clearly legible.`,
+      importantDates: [],
+      requirements: [
+        { name: 'PDF/JPEG Format', status: 'complete' },
+        { name: 'Clear Legibility', status: 'complete' },
+      ],
+    },
   },
   {
     id: 'doc-4',
@@ -82,6 +145,25 @@ export const documents: Document[] = [
     dateAdded: '2026-08-25',
     actionCount: 1,
     thumbnailColor: '#10b981',
+    extractedInfo: {
+      documentType: 'Tax Invoice / Purchase Receipt',
+      summary: 'Purchase receipt for MacBook Air M3 with 1-year limited warranty.',
+      rawText: `TECH WORLD RETAIL PVT LTD — TAX INVOICE
+Invoice No: TW-2026-88421
+Date: 25 August 2026
+
+Item Description: Apple MacBook Air 15" (M3, 16GB RAM, 512GB SSD)
+Serial Number: C02G4199Q05P
+Amount Paid: ₹1,24,900 (GST Included)
+Warranty: 1 Year Manufacturer Warranty (Expires: 25 August 2027)`,
+      importantDates: [
+        { label: 'Purchase Date', date: '25 August 2026', priority: 'info' },
+        { label: 'Warranty Expiry', date: '25 August 2027', priority: 'warning' },
+      ],
+      amounts: [
+        { label: 'Total Purchase Price', value: '₹1,24,900' },
+      ],
+    },
   },
   {
     id: 'doc-5',
@@ -91,6 +173,31 @@ export const documents: Document[] = [
     dateAdded: '2026-09-15',
     actionCount: 1,
     thumbnailColor: '#8b5cf6',
+    extractedInfo: {
+      documentType: 'Interview Invitation Email',
+      summary: 'Technical interview invitation from TechCorp for Senior Product Engineer role.',
+      rawText: `From: careers@techcorp.io
+To: candidate@lifeos.app
+Subject: Interview Invitation — Senior Product Engineer
+
+Dear Candidate,
+
+Thank you for your application for the Senior Product Engineer position. We were impressed with your background and would like to invite you for a 45-minute technical discussion with our Engineering Director.
+
+Interview Details:
+Date: 22 September 2026
+Time: 4:00 PM IST
+Format: Google Meet (link attached)
+
+Please confirm your availability by replying to this email by September 19, 2026.`,
+      importantDates: [
+        { label: 'Confirmation Deadline', date: '19 September 2026', priority: 'urgent' },
+        { label: 'Interview Date', date: '22 September 2026', priority: 'urgent' },
+      ],
+      people: [
+        { name: 'TechCorp Hiring Team', role: 'Recruiter' },
+      ],
+    },
   },
 ];
 
@@ -318,6 +425,105 @@ export const skillGap: SkillGap = {
   ],
   gapDetected: true,
 };
+
+export const jobOpportunities: JobOpportunity[] = [
+  {
+    id: 'job-1',
+    title: 'Cloud & Full Stack Engineer (React / AWS)',
+    company: 'Stripe',
+    location: 'Remote (US / Global / India)',
+    workMode: 'Remote',
+    type: 'Full-time',
+    salary: '$135,000 – $165,000 / yr',
+    source: 'LinkedIn',
+    sourceUrl: 'https://www.linkedin.com/jobs',
+    matchScore: 95,
+    matchReason: 'Direct match with React, TypeScript, Cloud APIs, and AWS architecture.',
+    postedDate: '2 hours ago',
+    skills: ['React', 'TypeScript', 'AWS Lambda', 'DynamoDB', 'Node.js'],
+    description: 'Build developer-first financial infrastructure with high scalability, zero downtime, and top-tier security standards.',
+  },
+  {
+    id: 'job-2',
+    title: 'Backend & AI Systems Engineer',
+    company: 'Datadog',
+    location: 'Bangalore / Remote',
+    workMode: 'Hybrid',
+    type: 'Full-time',
+    salary: '₹28,00,000 – ₹38,00,000 / yr',
+    source: 'Indeed',
+    sourceUrl: 'https://www.indeed.com',
+    matchScore: 91,
+    matchReason: 'Matches your Python, microservices, and observability telemetry background.',
+    postedDate: '5 hours ago',
+    skills: ['Python', 'FastAPI', 'AWS Bedrock', 'Docker', 'PostgreSQL'],
+    description: 'Scale real-time telemetry processing pipelines and integrate Generative AI assistants into production observability workloads.',
+  },
+  {
+    id: 'job-3',
+    title: 'Frontend Engineer (React / Next.js)',
+    company: 'Vercel',
+    location: 'Remote',
+    workMode: 'Remote',
+    type: 'Full-time',
+    salary: '$120,000 – $150,000 / yr',
+    source: 'Wellfound',
+    sourceUrl: 'https://wellfound.com',
+    matchScore: 89,
+    matchReason: 'Perfect fit for modern UI component libraries, TailwindCSS, and state management.',
+    postedDate: '1 day ago',
+    skills: ['React', 'Next.js', 'TailwindCSS', 'TypeScript', 'Web Performance'],
+    description: 'Create hyper-responsive user interfaces and developer tools that empower the global web ecosystem.',
+  },
+  {
+    id: 'job-4',
+    title: 'Associate Cloud Solutions Architect',
+    company: 'Amazon Web Services (AWS)',
+    location: 'Hyderabad / Remote',
+    workMode: 'Hybrid',
+    type: 'Full-time',
+    salary: '₹22,00,000 – ₹32,00,000 / yr',
+    source: 'LinkedIn',
+    sourceUrl: 'https://www.linkedin.com/jobs',
+    matchScore: 87,
+    matchReason: 'Strong alignment with your AWS S3, DynamoDB, Bedrock, and Cognito cloud credentials.',
+    postedDate: '1 day ago',
+    skills: ['AWS Cloud', 'Serverless', 'System Architecture', 'DynamoDB', 'Security'],
+    description: 'Partner with enterprise and high-growth startup engineering teams to design and implement cloud-native architectures.',
+  },
+  {
+    id: 'job-5',
+    title: 'Software Engineering Intern (Summer / Fall 2026)',
+    company: 'Google',
+    location: 'Remote / Bangalore / Mountain View',
+    workMode: 'Hybrid',
+    type: 'Internship',
+    salary: '$52 – $65 / hr (₹1,20,000 / mo)',
+    source: 'Glassdoor',
+    sourceUrl: 'https://www.glassdoor.com',
+    matchScore: 93,
+    matchReason: 'Matches your core CS fundamentals, algorithms, and full-stack project portfolio.',
+    postedDate: '2 days ago',
+    skills: ['Data Structures', 'Python', 'Algorithms', 'Distributed Systems'],
+    description: 'Work alongside world-class engineering teams building innovative products used by billions of people globally.',
+  },
+  {
+    id: 'job-6',
+    title: 'DevOps & Platform Engineer',
+    company: 'GitHub',
+    location: 'Remote',
+    workMode: 'Remote',
+    type: 'Full-time',
+    salary: '$130,000 – $160,000 / yr',
+    source: 'RemoteOK',
+    sourceUrl: 'https://remoteok.com',
+    matchScore: 85,
+    matchReason: 'High relevance for CI/CD automation, Terraform, and cloud pipeline security.',
+    postedDate: '3 days ago',
+    skills: ['GitHub Actions', 'Docker', 'Kubernetes', 'AWS', 'Terraform'],
+    description: 'Build the automated platform, CI/CD pipelines, and infrastructure that power millions of developers every day.',
+  },
+];
 
 export const scholarshipMatches: ScholarshipMatch[] = [
   {
