@@ -1,18 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Brain } from 'lucide-react';
+import { LifeOSLogo } from '@/components/ui/LifeOSLogo';
 
 export function AuthLayout({ children, title, subtitle }: { children: React.ReactNode; title: string; subtitle: string }) {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-bg-primary">
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 bg-bg-secondary border-r border-border relative overflow-hidden">
         <Link to="/" className="flex items-center gap-2.5 relative z-10">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white">
-            <Brain size={20} />
-          </div>
-          <div>
-            <div className="text-base font-bold text-text-primary tracking-tight">LifeOS</div>
-            <div className="text-[10px] text-text-tertiary font-medium">Personal Action Intelligence</div>
-          </div>
+          <LifeOSLogo size={32} showText={true} />
         </Link>
 
         <div className="relative z-10">
@@ -25,17 +19,17 @@ export function AuthLayout({ children, title, subtitle }: { children: React.Reac
         </div>
 
         <div className="relative z-10 flex gap-3">
-          <div className="flex-1 card p-4">
-            <div className="text-2xl font-bold text-text-primary">128</div>
-            <div className="text-xs text-text-tertiary mt-1">Sources connected</div>
+          <div className="flex-1 card p-3.5 border-border bg-bg-tertiary">
+            <div className="text-xs font-semibold text-accent">REAL DATA</div>
+            <div className="text-[11px] text-text-tertiary mt-1">Private Document RAG</div>
           </div>
-          <div className="flex-1 card p-4">
-            <div className="text-2xl font-bold text-text-primary">7</div>
-            <div className="text-xs text-text-tertiary mt-1">Actions detected</div>
+          <div className="flex-1 card p-3.5 border-border bg-bg-tertiary">
+            <div className="text-xs font-semibold text-blue-400">BEDROCK AI</div>
+            <div className="text-[11px] text-text-tertiary mt-1">Textract & GenAI</div>
           </div>
-          <div className="flex-1 card p-4">
-            <div className="text-2xl font-bold text-text-primary">3</div>
-            <div className="text-xs text-text-tertiary mt-1">Active processes</div>
+          <div className="flex-1 card p-3.5 border-border bg-bg-tertiary">
+            <div className="text-xs font-semibold text-purple-400">WEB SEARCH</div>
+            <div className="text-[11px] text-text-tertiary mt-1">Real-World Sources</div>
           </div>
         </div>
 
@@ -57,10 +51,7 @@ export function AuthLayout({ children, title, subtitle }: { children: React.Reac
         <div className="w-full max-w-sm">
           <div className="lg:hidden mb-8">
             <Link to="/" className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white">
-                <Brain size={20} />
-              </div>
-              <div className="text-base font-bold text-text-primary">LifeOS</div>
+              <LifeOSLogo size={32} showText={true} />
             </Link>
           </div>
           <h2 className="text-2xl font-bold text-text-primary">{title}</h2>
