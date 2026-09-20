@@ -16,7 +16,7 @@ export function FinancePage() {
 
   useEffect(() => {
     Promise.all([api.finance.getScholarships(), api.finance.getExpenses()])
-      .then(([s, e]) => { setScholarships(s); setExpenses(e); setLoading(false); })
+      .then(([s, e]) => { setScholarships(Array.isArray(s) ? s : []); setExpenses(Array.isArray(e) ? e : []); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
   }, []);
 
@@ -76,11 +76,11 @@ export function FinancePage() {
             </p>
           </div>
 
-          {scholarships.length === 0 ? (
+          {(scholarships || []).length === 0 ? (
             <EmptyState icon={<TrendingUp size={28} />} title="No scholarship matches" description="Add scholarship documents and LifeOS will match them against your profile." />
           ) : (
-            scholarships.map((s) => {
-              const badge = matchBadge[s.matchStatus];
+            (scholarships || []).map((s) => {
+              const badge = matchBadge[s.matchStatus] || matchBadge.potential;
               return (
                 <div key={s.id} className="card p-5">
                   <div className="flex items-start justify-between gap-3 mb-4">
@@ -97,7 +97,7 @@ export function FinancePage() {
                     <div>
                       <div className="text-xs font-medium text-emerald-400 mb-2">Matched information</div>
                       <div className="space-y-1.5">
-                        {s.matchedInfo.map((m, i) => (
+                        {(s.matchedInfo || []).map((m, i) => (
                           <div key={i} className="flex items-center gap-2 text-xs text-text-secondary">
                             <CheckCircle size={13} className="text-emerald-400 shrink-0" /> {m}
                           </div>
@@ -107,7 +107,7 @@ export function FinancePage() {
                     <div>
                       <div className="text-xs font-medium text-amber-400 mb-2">Missing information</div>
                       <div className="space-y-1.5">
-                        {s.missingInfo.map((m, i) => (
+                        {(s.missingInfo || []).map((m, i) => (
                           <div key={i} className="flex items-center gap-2 text-xs text-text-secondary">
                             <AlertTriangle size={13} className="text-amber-400 shrink-0" /> {m}
                           </div>
@@ -124,28 +124,32 @@ export function FinancePage() {
 
       {activeTab === 'expenses' && (
         <div className="animate-fadeIn">
-          {expenses.length === 0 ? (
+          {(expenses || []).length === 0 ? (
             <EmptyState icon={<Wallet size={28} />} title="No expenses tracked" description="LifeOS will detect expenses from your receipts and financial documents." />
           ) : (
             <>
               <div className="grid grid-cols-3 gap-3 mb-5">
                 <div className="card p-4">
                   <div className="text-xs text-text-tertiary uppercase tracking-wider">Total tracked</div>
-                  <div className="text-xl font-bold text-text-primary mt-1">₹1,85,000</div>
+                  <div className="text-xl font-bold text-accent mt-1">
+                    ₹{(expenses || []).reduce((sum, e) => sum + (typeof e?.amount === 'number' ? e.amount : parseFloat(String(e?.amount || 0).replace(/[^0-9.]/g, '')) || 0), 0).toLocaleString()}
+                  </div>
                 </div>
                 <div className="card p-4">
-                  <div className="text-xs text-text-tertiary uppercase tracking-wider">Education</div>
-                  <div className="text-xl font-bold text-text-primary mt-1">₹1,20,000</div>
+                  <div className="text-xs text-text-tertiary uppercase tracking-wider">Receipts count</div>
+                  <div className="text-xl font-bold text-text-primary mt-1">{(expenses || []).length}</div>
                 </div>
                 <div className="card p-4">
-                  <div className="text-xs text-text-tertiary uppercase tracking-wider">Electronics</div>
-                  <div className="text-xl font-bold text-text-primary mt-1">₹65,000</div>
+                  <div className="text-xs text-text-tertiary uppercase tracking-wider">Latest expense</div>
+                  <div className="text-xl font-bold text-text-primary mt-1">
+                    {expenses?.[0] ? `₹${(expenses[0].amount || 0).toLocaleString()}` : '₹0'}
+                  </div>
                 </div>
               </div>
 
               <div className="card overflow-hidden">
                 <div className="divide-y divide-border">
-                  {expenses.map((e) => (
+                  {(expenses || []).map((e) => (
                     <div key={e.id} className="flex items-center justify-between px-5 py-4 hover:bg-bg-tertiary transition-colors">
                       <div className="min-w-0">
                         <div className="text-sm font-medium text-text-primary">{e.description}</div>

@@ -17,19 +17,77 @@ const priorityConfig: Record<string, { color: string; bg: string; border: string
 
 export function ChangesPage() {
   const [loading, setLoading] = useState(true);
+  const [comparing, setComparing] = useState(false);
   const [error, setError] = useState(false);
   const [changes, setChanges] = useState<DocumentChange[]>([]);
-  const [selected, setSelected] = useState<DocumentChange | null>(null);
+  const [docs, setDocs] = useState<any[]>([]);
+  const [selectedDoc1, setSelectedDoc1] = useState<string>('');
+  const [selectedDoc2, setSelectedDoc2] = useState<string>('');
 
   useEffect(() => {
-    api.changes.getAll()
-      .then((c) => { setChanges(c); setSelected(c[0] || null); setLoading(false); })
+    Promise.all([api.changes.getAll(), api.documents.getAll()])
+      .then(([c, d]) => {
+        setChanges(c);
+        setDocs(d);
+        if (d.length >= 2) {
+          setSelectedDoc1(d[0].id);
+          setSelectedDoc2(d[1].id);
+        }
+        setLoading(false);
+      })
       .catch(() => { setError(true); setLoading(false); });
   }, []);
 
+  const handleCompare = () => {
+    if (!selectedDoc1 || !selectedDoc2 || selectedDoc1 === selectedDoc2) return;
+    setComparing(true);
+    api.changes.compare(selectedDoc1, selectedDoc2)
+      .then((newChange) => {
+        setChanges((prev) => [newChange, ...prev]);
+        setComparing(false);
+      })
+      .catch(() => setComparing(false));
+  };
+
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:py-8">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:py-8 space-y-6">
       <PageHeader title="What Changed?" subtitle="LifeOS detects and explains differences between document versions." />
+
+      {docs.length >= 2 && (
+        <div className="card p-4 border-accent/20 bg-accent-soft/30 space-y-3">
+          <div className="text-xs font-bold text-text-primary uppercase tracking-wider flex items-center gap-2">
+            <RefreshCw size={14} className="text-accent" /> Compare Any Two Document Versions
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <select
+              value={selectedDoc1}
+              onChange={(e) => setSelectedDoc1(e.target.value)}
+              className="input-field text-xs flex-1"
+            >
+              {docs.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+            <ArrowRight size={16} className="text-text-tertiary shrink-0 hidden sm:block" />
+            <select
+              value={selectedDoc2}
+              onChange={(e) => setSelectedDoc2(e.target.value)}
+              className="input-field text-xs flex-1"
+            >
+              {docs.map((d) => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+            <button
+              onClick={handleCompare}
+              disabled={comparing || !selectedDoc1 || !selectedDoc2 || selectedDoc1 === selectedDoc2}
+              className="btn-primary text-xs px-4 py-2 font-semibold shrink-0 disabled:opacity-50"
+            >
+              {comparing ? 'Comparing...' : 'Run Version AI Diff'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <LoadingSkeleton variant="detail" />
@@ -38,8 +96,8 @@ export function ChangesPage() {
       ) : changes.length === 0 ? (
         <EmptyState
           icon={<RefreshCw size={28} />}
-          title="No changes detected"
-          description="LifeOS will show changes here when it detects differences between updated versions of your documents."
+          title="No version comparisons yet"
+          description="Upload multiple document versions or click 'Load Demo Package' in Document Workspace to compare changes."
         />
       ) : (
         <div className="space-y-6 animate-fadeIn">

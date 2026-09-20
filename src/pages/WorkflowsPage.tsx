@@ -10,6 +10,7 @@ import type { Workflow } from '@/types';
 
 export function WorkflowsPage() {
   const [loading, setLoading] = useState(true);
+  const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState(false);
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
 
@@ -18,6 +19,16 @@ export function WorkflowsPage() {
       .then((w) => { setWorkflows(w); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
   }, []);
+
+  const handleAnalyzeWorkflow = () => {
+    setAnalyzing(true);
+    api.workflows.analyze()
+      .then((newWf) => {
+        setWorkflows((prev) => [newWf, ...prev]);
+        setAnalyzing(false);
+      })
+      .catch(() => setAnalyzing(false));
+  };
 
   if (loading) return (
     <div className="mx-auto max-w-4xl px-4 py-6 sm:py-8">
@@ -34,12 +45,12 @@ export function WorkflowsPage() {
   );
 
   if (workflows.length === 0) return (
-    <div className="mx-auto max-w-4xl px-4 py-6 sm:py-8">
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:py-8 space-y-6">
       <PageHeader title="Workflows" subtitle="LifeOS understands multi-step processes — not just individual tasks." />
       <EmptyState
         icon={<GitBranch size={28} />}
-        title="No workflows yet"
-        description="Processes will appear when LifeOS identifies multi-step activities from your documents and applications."
+        title="No workflows extracted yet"
+        description="Your first workflow will appear when LifeOS identifies a multi-step process in one of your uploaded documents."
       />
     </div>
   );

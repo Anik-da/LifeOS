@@ -126,8 +126,8 @@ export function SecurityPage() {
             <div className="card p-5">
               <div className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">Risk indicators</div>
               <div className="space-y-2.5">
-                {result.riskIndicators.map((r) => {
-                  const cfg = severityConfig[r.severity];
+                {(result.riskIndicators || []).map((r) => {
+                  const cfg = severityConfig[r.severity] || severityConfig.low;
                   return (
                     <div key={r.id} className={`rounded-xl border ${cfg.border} ${cfg.bg} p-3.5`}>
                       <div className="flex items-start gap-2.5">
@@ -146,8 +146,8 @@ export function SecurityPage() {
             <div className="card p-5 border-blue-500/15">
               <div className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-3">What to verify</div>
               <div className="space-y-3">
-                {result.verificationSteps.map((v, i) => (
-                  <div key={v.id} className="flex items-start gap-3">
+                {(result.verificationSteps || []).map((v, i) => (
+                  <div key={v.id || i} className="flex items-start gap-3">
                     <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold">
                       {i + 1}
                     </div>
