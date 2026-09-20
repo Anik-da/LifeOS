@@ -1,0 +1,352 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: LifeOS - Personal Action Intelligence AWS Serverless Architecture
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: nodejs22.x
+    Environment:
+      Variables:
+        AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
+        BEDROCK_MODEL_ID: !Ref BedrockModelId
+        S3_BUCKET_NAME: !Ref DocumentsBucket
+        DYNAMODB_TABLE_PREFIX: !Ref TablePrefix
+        COGNITO_USER_POOL_ID: !Ref UserPool
+        COGNITO_CLIENT_ID: !Ref UserPoolClient
+
+Parameters:
+  BedrockModelId:
+    Type: String
+    Default: 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
+    Description: Bedrock foundation model ID to use
+  TablePrefix:
+    Type: String
+    Default: 'LifeOS'
+    Description: Prefix for DynamoDB tables
+
+Resources:
+  # ===================================================================
+  # Cognito User Pool & Client
+  # ===================================================================
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub '${TablePrefix}-UserPool'
+      AutoVerifiedAttributes:
+        - email
+      UsernameAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+          RequireUppercase: true
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub '${TablePrefix}-UserPoolClient'
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+
+  # ===================================================================
+  # S3 Document Storage Bucket
+  # ===================================================================
+  DocumentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::AccountId}-${AWS::Region}-lifeos-documents'
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, PUT, POST, DELETE, HEAD]
+            AllowedOrigins: ['*']
+            MaxAge: 3000
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # ===================================================================
+  # DynamoDB Tables
+  # ===================================================================
+  DocumentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${TablePrefix}-Documents'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  ActionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${TablePrefix}-Actions'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  WorkflowsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${TablePrefix}-Workflows'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  ChangesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${TablePrefix}-Changes'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  NotificationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${TablePrefix}-Notifications'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  CareerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${TablePrefix}-Career'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  FinanceTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${TablePrefix}-Finance'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+
+  # ===================================================================
+  # EventBridge Custom Event Bus
+  # ===================================================================
+  LifeOSEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: !Sub '${TablePrefix}-EventBus'
+
+  # ===================================================================
+  # SQS Queue for Asynchronous Resilience
+  # ===================================================================
+  DocumentProcessingQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${TablePrefix}-DocumentProcessingQueue'
+      VisibilityTimeout: 180
+      MessageRetentionPeriod: 86400
+
+  # ===================================================================
+  # SNS Notification Topic
+  # ===================================================================
+  DeadlineNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${TablePrefix}-DeadlineAlerts'
+      DisplayName: 'LifeOS Deadline Alert System'
+
+  # ===================================================================
+  # Step Functions State Machine for Document Processing Pipeline
+  # ===================================================================
+  DocumentProcessingStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub '${TablePrefix}-DocumentProcessingPipeline'
+      RoleArn: !GetAtt StepFunctionsExecutionRole.Arn
+      DefinitionString: !Sub |
+        {
+          "Comment": "LifeOS Document -> AI -> Knowledge -> Action Pipeline",
+          "StartAt": "ExtractTextFromS3",
+          "States": {
+            "ExtractTextFromS3": {
+              "Type": "Task",
+              "Resource": "${ApiHandlerFunction.Arn}",
+              "Next": "BedrockDocumentAnalysis"
+            },
+            "BedrockDocumentAnalysis": {
+              "Type": "Task",
+              "Resource": "${ApiHandlerFunction.Arn}",
+              "Next": "StoreActionsAndEvents"
+            },
+            "StoreActionsAndEvents": {
+              "Type": "Task",
+              "Resource": "${ApiHandlerFunction.Arn}",
+              "End": true
+            }
+          }
+        }
+
+  StepFunctionsExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub '${TablePrefix}-StepFunctionsRole'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: InvokeLambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt ApiHandlerFunction.Arn
+
+  # ===================================================================
+  # API Gateway REST API
+  # ===================================================================
+  ApiGatewayRestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt UserPool.Arn
+
+  # ===================================================================
+  # Unified API Handler Lambda
+  # ===================================================================
+  ApiHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./backend/dist/
+      Handler: index.handler
+      Policies:
+        - AmazonBedrockFullAccess
+        - AmazonTextractFullAccess
+        - AmazonS3FullAccess
+        - AmazonDynamoDBFullAccess
+        - AWSStepFunctionsFullAccess
+        - AmazonSNSFullAccess
+        - AmazonSQSFullAccess
+        - EventBridgeFullAccess
+      Events:
+        PublicAuthSignup:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            Path: /auth/signup
+            Method: POST
+            Auth:
+              Authorizer: NONE
+        PublicAuthLogin:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            Path: /auth/login
+            Method: POST
+            Auth:
+              Authorizer: NONE
+        ProxyApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayRestApi
+            Path: /{proxy+}
+            Method: ANY
+
+Outputs:
+  ApiUrl:
+    Description: Base API Gateway Endpoint URL
+    Value: !Sub 'https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
+  UserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Description: Cognito User Pool Client ID
+    Value: !Ref UserPoolClient
+  S3BucketName:
+    Description: Document Storage S3 Bucket
+    Value: !Ref DocumentsBucket
+  EventBusName:
+    Description: LifeOS EventBridge Custom Bus
+    Value: !Ref LifeOSEventBus
+  SQSQueueUrl:
+    Description: LifeOS Document Processing SQS Queue URL
+    Value: !Ref DocumentProcessingQueue
+  SNSTopicArn:
+    Description: LifeOS SNS Notification Topic ARN
+    Value: !Ref DeadlineNotificationTopic
+
