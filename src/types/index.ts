@@ -29,12 +29,22 @@ export interface ImportantDate {
 
 export interface ExtractedInfo {
   documentType: string;
-  importantDates: ImportantDate[];
-  requirements: DocRequirement[];
-  people: { name: string; role: string }[];
-  amounts: { label: string; value: string }[];
+  title?: string;
+  summary?: string;
+  importantDates: (ImportantDate & { evidence?: string; section?: string })[];
+  deadlines?: (ImportantDate & { evidence?: string; section?: string })[];
+  requirements: (DocRequirement & { evidence?: string; section?: string })[];
+  organizations?: { name: string; role?: string; page?: number; section?: string; evidence?: string }[];
+  people: { name: string; role: string; page?: number; section?: string; evidence?: string }[];
+  amounts: { label: string; value: string; page?: number; section?: string; evidence?: string }[];
   actions: string[];
+  importantTerms?: string[];
+  entities?: { name: string; category: string; page?: number }[];
+  risks?: { label: string; severity: 'high' | 'medium' | 'low'; description: string; page?: number; section?: string; evidence?: string }[];
   relatedDocuments: { id: string; name: string }[];
+  isSyntheticDemo?: boolean;
+  rawText?: string;
+  pagesText?: { pageNumber: number; text: string }[];
 }
 
 export interface Document {
@@ -50,6 +60,8 @@ export interface Document {
 
 // ============= Actions =============
 
+export type ReminderStatus = 'SCHEDULED' | 'SENT' | 'SKIPPED' | 'CANCELLED' | 'FAILED';
+
 export interface Action {
   id: string;
   title: string;
@@ -61,6 +73,12 @@ export interface Action {
   priority: Priority;
   status: ActionStatus;
   relatedDocuments: string[];
+  reminderEnabled?: boolean;
+  reminderAt?: string;
+  reminderScheduleId?: string;
+  reminderStatus?: ReminderStatus;
+  reminderSentAt?: string;
+  reminderError?: string;
 }
 
 // ============= Intelligence / Timeline =============
@@ -142,6 +160,25 @@ export interface SkillGap {
   yourSkills: SkillItem[];
   jobRequirements: SkillItem[];
   gapDetected: boolean;
+}
+
+export interface JobOpportunity {
+  id: string;
+  title: string;
+  company: string;
+  companyLogoUrl?: string;
+  location: string;
+  workMode: 'Remote' | 'Hybrid' | 'On-site';
+  type: 'Full-time' | 'Contract' | 'Internship';
+  salary: string;
+  source: 'LinkedIn' | 'Indeed' | 'Wellfound' | 'RemoteOK' | 'Glassdoor';
+  sourceUrl: string;
+  matchScore: number;
+  matchReason: string;
+  postedDate: string;
+  skills: string[];
+  description: string;
+  applied?: boolean;
 }
 
 // ============= Finance =============
@@ -228,11 +265,23 @@ export interface SourceReference {
   page?: string;
 }
 
+export interface PublicSourceReference {
+  title: string;
+  url: string;
+  domain: string;
+  sourceType: 'Official Portal' | 'Government' | 'Public Documentation' | 'Web Result';
+  retrievedAt: string;
+  snippet?: string;
+}
+
 export interface AIAnswer {
   question: string;
   answer: string;
+  why?: string[];
   extractedInfo?: string[];
   sources: SourceReference[];
+  publicSources?: PublicSourceReference[];
+  connectedInsight?: string;
   suggestedAction?: string;
   actionLink?: string;
 }
