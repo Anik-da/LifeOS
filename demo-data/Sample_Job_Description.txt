@@ -1,0 +1,17 @@
+JOB DESCRIPTION: Junior AI & Cloud Engineer
+
+Company: NovaStack Technologies
+Location: Bengaluru / Hybrid
+Position: Junior AI & Cloud Engineer
+
+RESPONSIBILITIES:
+- Build and maintain serverless microservices using AWS Lambda, DynamoDB, API Gateway, and S3.
+- Develop generative AI features using Python, LangChain, and Amazon Bedrock / LLM APIs.
+- Optimize container deployments using Docker and Kubernetes.
+- Write clean TypeScript for frontend integration.
+
+REQUIRED SKILLS:
+- Proficiency in Python and TypeScript.
+- Strong hands-on experience with AWS cloud services (Lambda, S3, DynamoDB).
+- Familiarity with Docker containerization and Kubernetes orchestration.
+- Basic understanding of machine learning models and vector embeddings.

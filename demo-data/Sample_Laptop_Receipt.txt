@@ -1,0 +1,14 @@
+TAX INVOICE / RECEIPT
+
+Merchant: TechNova Retail Electronics Ltd.
+Store Location: Indiranagar, Bengaluru
+Invoice No: INV-2026-88412
+Date: 18 September 2026
+
+ITEMS PURCHASED:
+1. Gigabyte Aero 16 OLED Creator Laptop — Qty: 1 — Amount: ₹1,45,000.00
+2. Wireless Ergonomic Mouse — Qty: 1 — Amount: ₹2,499.00
+
+TOTAL AMOUNT PAID: ₹1,47,499.00
+Payment Method: UPI / Credit Card
+Status: Paid in Full

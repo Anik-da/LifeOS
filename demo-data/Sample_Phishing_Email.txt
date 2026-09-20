@@ -1,0 +1,17 @@
+URGENT SECURITY ALERT: YOUR BANK ACCOUNT SUSPENDED IMMEDIATELY
+
+From: security-alert-notice-2941@fast-verify-net-portal.org
+Subject: IMMEDIATE ACTION REQUIRED: Account Blocked in 30 Minutes
+
+Dear Customer,
+
+Your banking access has been temporarily restricted due to unverified login attempts from an unknown device.
+
+To restore your account and avoid permanent account suspension, you MUST verify your credentials within 30 minutes.
+
+Click the secure link below to verify your password and enter your OTP:
+https://fast-verify-net-portal.org/login?step=verify-otp
+
+Do NOT ignore this warning. A mandatory administrative fee of ₹2,500 will be charged if verification fails.
+
+Bank Customer Service Team

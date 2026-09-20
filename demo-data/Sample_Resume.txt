@@ -1,0 +1,18 @@
+CANDIDATE RESUME: Anik Das
+
+Name: Anik Das
+Email: anik.developer@example.com
+Role: Full-Stack & AI Engineer
+
+SUMMARY:
+Passionate software engineer experienced in building serverless web applications and AI-driven platforms.
+
+SKILLS:
+- Languages: Python, TypeScript, JavaScript, SQL, HTML/CSS.
+- Cloud & Infrastructure: AWS Lambda, Amazon S3, DynamoDB, API Gateway, CloudWatch.
+- AI & Frameworks: React, Vite, Node.js, Amazon Bedrock, REST APIs.
+- Version Control: Git, GitHub Actions.
+
+PROJECTS:
+- LifeOS: Personal Action Intelligence platform connecting private document intelligence with real-world web search.
+- Event-driven reminder pipeline using EventBridge Scheduler and Amazon SES.
